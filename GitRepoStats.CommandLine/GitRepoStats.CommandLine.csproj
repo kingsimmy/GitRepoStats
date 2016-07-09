@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlGenerator, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlGenerator.1.0.11\lib\net45\HtmlGenerator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="LibGit2Sharp, Version=0.22.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
       <HintPath>..\packages\LibGit2Sharp.0.22.0\lib\net40\LibGit2Sharp.dll</HintPath>
       <Private>True</Private>
@@ -51,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthorStats.cs" />
+    <Compile Include="ExtensionStats.cs" />
     <Compile Include="GitRepoAnalyser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepoStats.cs" />

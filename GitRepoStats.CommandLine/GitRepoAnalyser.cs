@@ -1,6 +1,5 @@
 ﻿using LibGit2Sharp;
 using System;
-using System.Collections.Generic;
 
 namespace GitRepoStats.CommandLine
 {
@@ -9,11 +8,7 @@ namespace GitRepoStats.CommandLine
         static void Main(string[] args)
         {
             RepoStats repoStats = GetRepoStats(args[0]);
-            foreach(KeyValuePair<string, AuthorStats> pair in repoStats.AuthorStatistics)
-            {
-                Console.WriteLine(pair.Key + " " + pair.Value);
-            }
-            Console.WriteLine();
+            Console.WriteLine(repoStats);
         }
 
         private static RepoStats GetRepoStats(string repoPath)
