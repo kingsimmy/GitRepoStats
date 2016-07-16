@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System;
+using Tag = HtmlGenerator.Tag;
+using HtmlGenerator;
 
 namespace GitRepoStats.CommandLine
 {
@@ -58,6 +60,11 @@ namespace GitRepoStats.CommandLine
             string authorsString = string.Concat(AuthorStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
             string extensionsString = string.Concat(ExtensionStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
             return authorsString + extensionsString;
+        }
+
+        public HtmlElement ToHtml()
+        {
+            return Tag.Table;
         }
     }
 }
