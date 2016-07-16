@@ -2,6 +2,8 @@
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace GitRepoStats.CommandLine
@@ -12,27 +14,64 @@ namespace GitRepoStats.CommandLine
         {
             List<string> argList = args.ToList();
             bool htmlOutput = argList.Remove("-html");
-            RepoStats repoStats = GetRepoStats(args[0]);
-            string output;
-            if (htmlOutput)
+            string outFilePath = GetOutFilePath(argList);
+            RepoStats[] repoStats = GetRepoStats(args[0]).ToArray();
+            string output = htmlOutput ? GenerateHtml(repoStats) : GenerateString(repoStats);
+                        
+            if (String.IsNullOrEmpty(outFilePath))
             {
-                HtmlDocument document = new HtmlDocument();
-                HtmlElement repoElement = repoStats.ToHtml();
-                document.Body.AddChild(repoElement);
-                output = document.Serialize().Replace("\r", Environment.NewLine);                
+                Console.WriteLine(output);
             }
             else
             {
-                output = repoStats.ToString();
+                File.WriteAllText(outFilePath, output);
             }
-            Console.WriteLine(output);
         }
 
-        private static RepoStats GetRepoStats(string repoPath)
-        {            
-            Repository repo = new Repository(repoPath);
-            RepoStats repoStats = new RepoStats(repo);
-            return repoStats;
+        private static string GetOutFilePath(List<string> args)
+        {
+            int outFileIndex = args.IndexOf("-outFile");
+            if (outFileIndex == -1)
+            {
+                return string.Empty;
+            }
+            if (outFileIndex == args.Count - 1)
+            {
+                Console.WriteLine("-outFile flag must be followed by a file name");
+                Environment.Exit(1);
+            }            
+            string outFilePath = args[outFileIndex + 1];
+            args.RemoveRange(outFileIndex, 2);
+            if (Directory.Exists(outFilePath))
+            {
+                Console.WriteLine($"-outFile value {outFilePath} is a directory. Please pass a file path for -outFile");
+                Environment.Exit(1);
+            }
+            return outFilePath;
+        }
+
+        private static string GenerateHtml(params RepoStats[] allStats)
+        {
+            HtmlDocument document = new HtmlDocument();
+            Collection<HtmlElement> elements = new Collection<HtmlElement>(allStats.Select(x => x.ToHtml()).ToList());
+            document.Body.AddChildren(elements);
+            return document.Serialize().Replace("\r", Environment.NewLine);
+        }
+
+        private static string GenerateString(params RepoStats[] allStats)
+        {
+            Func<RepoStats, string> repoStatsToString = 
+                repoStats => repoStats.ToString() + Environment.NewLine + Environment.NewLine;
+            return new String(allStats.SelectMany(repoStatsToString).ToArray());
+        }
+
+        private static IEnumerable<RepoStats> GetRepoStats(params string[] repoPaths)
+        {
+            foreach (string repoPath in repoPaths)
+            {
+                Repository repo = new Repository(repoPath);
+                yield return new RepoStats(repo);
+            }
         }
     }
 }
