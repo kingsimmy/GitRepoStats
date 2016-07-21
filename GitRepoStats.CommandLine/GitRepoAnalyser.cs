@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Attribute = HtmlGenerator.Attribute;
+using Tag = HtmlGenerator.Tag;
 
 namespace GitRepoStats.CommandLine
 {
@@ -53,9 +56,19 @@ namespace GitRepoStats.CommandLine
         private static string GenerateHtml(params RepoStats[] allStats)
         {
             HtmlDocument document = new HtmlDocument();
+            document.Body.Children.Add(Tag.Style.WithInnerText(LoadCssString()).WithAttribute(Attribute.Type("text/css")));
             Collection<HtmlElement> elements = new Collection<HtmlElement>(allStats.Select(x => x.ToHtml()).ToList());
             document.Body.AddChildren(elements);
             return document.Serialize().Replace("\r", Environment.NewLine);
+        }
+
+        private static string LoadCssString()
+        {
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GitRepoStats.CommandLine.Resources.style.css"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return "\r" + reader.ReadToEnd().Replace(Environment.NewLine, "\r") + "\r\t";
+            }
         }
 
         private static string GenerateString(params RepoStats[] allStats)

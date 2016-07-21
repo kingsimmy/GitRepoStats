@@ -5,6 +5,8 @@ using System.IO;
 using System;
 using Tag = HtmlGenerator.Tag;
 using HtmlGenerator;
+using System.Collections.ObjectModel;
+using System.Net;
 
 namespace GitRepoStats.CommandLine
 {
@@ -15,10 +17,12 @@ namespace GitRepoStats.CommandLine
 
         public RepoStats(Repository repo)
         {
+            RepoPath = repo.Info.Path;
             CountPerAuthor(repo);
             CountPerExtension(repo);
         }
 
+        public string RepoPath { get; }
         public IReadOnlyDictionary<string, AuthorStats> AuthorStatistics { get { return authorStatistics; } }
         public IReadOnlyDictionary<string, ExtensionStats> ExtensionStatistics { get { return extensionStatistics; } }
 
@@ -59,12 +63,29 @@ namespace GitRepoStats.CommandLine
         {            
             string authorsString = string.Concat(AuthorStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
             string extensionsString = string.Concat(ExtensionStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
-            return authorsString + extensionsString;
+            return RepoPath + Environment.NewLine + authorsString + extensionsString;
         }
 
         public HtmlElement ToHtml()
         {
-            return Tag.Table;
+            return AuthorsTable();
+        }
+
+        private HtmlElement AuthorsTable()
+        {
+            List<HtmlElement> rows = new List<HtmlElement> { Tag.Tr.WithInnerText("<td>Author</td><td>Added</td><td>Deleted</td>")};
+            rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Key, x.Value)));
+            return Tag.Table.WithChildren(new Collection<HtmlElement>(rows));
+        }
+
+        private HtmlElement AuthorRow(string author, AuthorStats stats)
+        {
+            return Tag.Tr.WithChildren(new Collection<HtmlElement>
+            {
+                Tag.Td.WithInnerText(WebUtility.HtmlEncode(author)),
+                Tag.Td.WithInnerText(stats.LinesAdded.ToString()),
+                Tag.Td.WithInnerText(stats.LinesDeleted.ToString())
+            });
         }
     }
 }
