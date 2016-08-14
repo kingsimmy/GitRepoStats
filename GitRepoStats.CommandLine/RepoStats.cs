@@ -35,7 +35,7 @@ namespace GitRepoStats.CommandLine
                     continue;
                 }
                 PatchStats stats = repo.Diff.Compare<PatchStats>(commit.Parents.First().Tree, commit.Tree);
-                IncrementAuthor(commit.Author.ToString(), stats.TotalLinesAdded, stats.TotalLinesDeleted);
+                IncrementAuthor(commit.Author, stats.TotalLinesAdded, stats.TotalLinesDeleted);
             }
         }
 
@@ -47,13 +47,13 @@ namespace GitRepoStats.CommandLine
                 .ToDictionary(x => x.Key, x => new ExtensionStats(x.Count(), x.Sum()));
         }
 
-        private void IncrementAuthor(string author, int numLinesAdded, int numLinesDeleted)
+        private void IncrementAuthor(Signature author, int numLinesAdded, int numLinesDeleted)
         {
             AuthorStats authorStats;
-            if(!authorStatistics.TryGetValue(author, out authorStats))
+            if(!authorStatistics.TryGetValue(author.Email, out authorStats))
             {
-                authorStatistics[author] = new AuthorStats();
-                authorStats = authorStatistics[author];
+                authorStatistics[author.Email] = new AuthorStats(author.Name, author.Email);
+                authorStats = authorStatistics[author.Email];
             }
             authorStats.LinesAdded += numLinesAdded;
             authorStats.LinesDeleted += numLinesDeleted;
@@ -61,7 +61,7 @@ namespace GitRepoStats.CommandLine
 
         public override string ToString()
         {            
-            string authorsString = string.Concat(AuthorStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
+            string authorsString = string.Concat(AuthorStatistics.SelectMany(x => x.Value.NameEmail + " " + x.Value + Environment.NewLine));
             string extensionsString = string.Concat(ExtensionStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
             return RepoPath + Environment.NewLine + authorsString + extensionsString;
         }
@@ -74,7 +74,7 @@ namespace GitRepoStats.CommandLine
         private HtmlElement AuthorsTable()
         {
             List<HtmlElement> rows = new List<HtmlElement> { Tag.Tr.WithInnerText("<td>Author</td><td>Added</td><td>Deleted</td>")};
-            rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Key, x.Value)));
+            rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Value.NameEmail, x.Value)));
             return Tag.Table.WithChildren(new Collection<HtmlElement>(rows));
         }
 
