@@ -28,6 +28,7 @@ namespace GitRepoStats.CommandLine
             else
             {
                 File.WriteAllText(outFilePath, output);
+                Console.WriteLine("Output has been written to " + outFilePath);
             }
         }
 
