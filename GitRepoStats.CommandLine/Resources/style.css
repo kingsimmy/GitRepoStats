@@ -4,5 +4,11 @@
 	table,th,td {
 		padding: 2px;
 		border: solid 1px;	
+		background-color: HoneyDew;
+		border-color: #BDBDBD;
 		border-collapse: collapse;
+	}
+	th{
+		background-color: #DCFFDC;
+		font-weight: bold;
 	}

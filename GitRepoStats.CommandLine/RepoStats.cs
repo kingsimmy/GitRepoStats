@@ -1,12 +1,13 @@
-﻿using LibGit2Sharp;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System;
-using Tag = HtmlGenerator.Tag;
-using HtmlGenerator;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Net;
+using GitRepoStats.CommandLine.Extensions;
+using HtmlGenerator;
+using LibGit2Sharp;
+using Tag = HtmlGenerator.Tag;
 
 namespace GitRepoStats.CommandLine
 {
@@ -73,19 +74,20 @@ namespace GitRepoStats.CommandLine
 
         private HtmlElement AuthorsTable()
         {
-            List<HtmlElement> rows = new List<HtmlElement> { Tag.Tr.WithInnerText("<td>Author</td><td>Added</td><td>Deleted</td>")};
-            rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Value.NameEmail, x.Value)));
-            return Tag.Table.WithChildren(new Collection<HtmlElement>(rows));
+            List<HtmlElement> rows = new List<HtmlElement> { HeaderRow() };
+            rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Value.NameEmail, x.Value)));            
+            return Tag.Div.WithChildren(Tag.H3.WithInnerText(RepoPath), Tag.Table.WithChildren(rows)); ;
+        }
+
+        private HtmlElement HeaderRow()
+        {
+            return Tag.Tr.WithChildren(Tag.Th.WithInnerText("Author"), Tag.Th.WithInnerText("Added"), Tag.Th.WithInnerText("Deleted"));
         }
 
         private HtmlElement AuthorRow(string author, AuthorStats stats)
         {
-            return Tag.Tr.WithChildren(new Collection<HtmlElement>
-            {
-                Tag.Td.WithInnerText(WebUtility.HtmlEncode(author)),
-                Tag.Td.WithInnerText(stats.LinesAdded.ToString()),
-                Tag.Td.WithInnerText(stats.LinesDeleted.ToString())
-            });
+            return Tag.Tr.WithChildren(Tag.Td.WithInnerText(WebUtility.HtmlEncode(author)), Tag.Td.WithInnerText(stats.LinesAdded.ToString("N0")),
+                Tag.Td.WithInnerText(stats.LinesDeleted.ToString("N0")));
         }
     }
 }
