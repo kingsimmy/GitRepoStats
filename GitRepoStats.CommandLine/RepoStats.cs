@@ -24,6 +24,7 @@ namespace GitRepoStats.CommandLine
         }
 
         public string RepoPath { get; }
+        public string RepoName { get { return new DirectoryInfo(RepoPath).Parent.Name; } }
         public IReadOnlyDictionary<string, AuthorStats> AuthorStatistics { get { return authorStatistics; } }
         public IReadOnlyDictionary<string, ExtensionStats> ExtensionStatistics { get { return extensionStatistics; } }
 
@@ -76,7 +77,7 @@ namespace GitRepoStats.CommandLine
         {
             List<HtmlElement> rows = new List<HtmlElement> { HeaderRow() };
             rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Value.NameEmail, x.Value)));            
-            return Tag.Div.WithChildren(Tag.H3.WithInnerText(RepoPath), Tag.Table.WithChildren(rows)); ;
+            return Tag.Div.WithChildren(Tag.H3.WithInnerText(RepoName), Tag.Table.WithChildren(rows)); ;
         }
 
         private HtmlElement HeaderRow()

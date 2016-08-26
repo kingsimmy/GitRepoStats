@@ -18,7 +18,7 @@ namespace GitRepoStats.CommandLine
             List<string> argList = args.ToList();
             bool htmlOutput = argList.Remove("-html");
             string outFilePath = GetOutFilePath(argList);
-            RepoStats[] repoStats = GetRepoStats(args[0]).ToArray();
+            IEnumerable<RepoStats> repoStats = GetRepoStats(argList);
             string output = htmlOutput ? GenerateHtml(repoStats) : GenerateString(repoStats);
                         
             if (String.IsNullOrEmpty(outFilePath))
@@ -56,6 +56,11 @@ namespace GitRepoStats.CommandLine
 
         private static string GenerateHtml(params RepoStats[] allStats)
         {
+            return GenerateHtml(allStats);
+        }
+
+        private static string GenerateHtml(IEnumerable<RepoStats> allStats)
+        {
             HtmlDocument document = new HtmlDocument();
             document.Body.Children.Add(Tag.Style.WithInnerText(LoadCssString()).WithAttribute(Attribute.Type("text/css")));
             Collection<HtmlElement> elements = new Collection<HtmlElement>(allStats.Select(x => x.ToHtml()).ToList());
@@ -74,12 +79,22 @@ namespace GitRepoStats.CommandLine
 
         private static string GenerateString(params RepoStats[] allStats)
         {
+            return GenerateHtml(allStats);
+        }
+
+        private static string GenerateString(IEnumerable<RepoStats> allStats)
+        {
             Func<RepoStats, string> repoStatsToString = 
                 repoStats => repoStats.ToString() + Environment.NewLine + Environment.NewLine;
             return new String(allStats.SelectMany(repoStatsToString).ToArray());
         }
 
         private static IEnumerable<RepoStats> GetRepoStats(params string[] repoPaths)
+        {
+            return GetRepoStats(repoPaths);
+        }
+
+        private static IEnumerable<RepoStats> GetRepoStats(IEnumerable<string> repoPaths)
         {
             foreach (string repoPath in repoPaths)
             {
