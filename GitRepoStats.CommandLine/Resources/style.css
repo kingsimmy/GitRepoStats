@@ -13,12 +13,13 @@
 		font-weight: bold;
 	}
 	.parent{
-		display: flex;		
+		display: flex;
+		justify-content: center;
 		flex-flow: row wrap;
 	}
 	.child{
 		margin: 50px;
-		width: 700px;
+		width: 800px;
 	}
 	.repoHeader{		
 		margin: 0;
