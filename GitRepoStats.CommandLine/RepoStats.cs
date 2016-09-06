@@ -77,7 +77,7 @@ namespace GitRepoStats.CommandLine
         {
             List<HtmlElement> rows = new List<HtmlElement> { HeaderRow() };
             rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Value.NameEmail, x.Value)));            
-            return Tag.Div.WithChildren(Tag.H3.WithInnerText(RepoName), Tag.Table.WithChildren(rows)); ;
+            return Tag.Div.WithClass("child").WithChildren(Tag.H3.WithInnerText(RepoName).WithClass("repoHeader"), Tag.Table.WithChildren(rows));
         }
 
         private HtmlElement HeaderRow()

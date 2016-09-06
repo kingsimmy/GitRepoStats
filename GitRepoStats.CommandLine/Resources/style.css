@@ -12,3 +12,14 @@
 		background-color: #DCFFDC;
 		font-weight: bold;
 	}
+	.parent{
+		display: flex;		
+		flex-flow: row wrap;
+	}
+	.child{
+		margin: 50px;
+		width: 700px;
+	}
+	.repoHeader{		
+		margin: 0;
+	}
