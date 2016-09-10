@@ -34,6 +34,7 @@ namespace GitRepoStats.CommandLine
             {
                 if (commit.Parents.Count() != 1)
                 {
+                    IncrementAuthor(commit.Author, 0, 0);
                     continue;
                 }
                 PatchStats stats = repo.Diff.Compare<PatchStats>(commit.Parents.First().Tree, commit.Tree);
@@ -57,6 +58,7 @@ namespace GitRepoStats.CommandLine
                 authorStatistics[author.Email] = new AuthorStats(author.Name, author.Email);
                 authorStats = authorStatistics[author.Email];
             }
+            authorStats.NumberOfCommits += 1;
             authorStats.LinesAdded += numLinesAdded;
             authorStats.LinesDeleted += numLinesDeleted;
         }
@@ -76,19 +78,19 @@ namespace GitRepoStats.CommandLine
         private HtmlElement AuthorsTable()
         {
             List<HtmlElement> rows = new List<HtmlElement> { HeaderRow() };
-            rows.AddRange(AuthorStatistics.Select(x => AuthorRow(x.Value.NameEmail, x.Value)));            
+            rows.AddRange(AuthorStatistics.Values.OrderByDescending(x => x.NumberOfCommits).Select(x => AuthorRow(x.NameEmail, x)));
             return Tag.Div.WithClass("child").WithChildren(Tag.H3.WithInnerText(RepoName).WithClass("repoHeader"), Tag.Table.WithChildren(rows));
         }
 
         private HtmlElement HeaderRow()
         {
-            return Tag.Tr.WithChildren(Tag.Th.WithInnerText("Author"), Tag.Th.WithInnerText("Added"), Tag.Th.WithInnerText("Deleted"));
+            return Tag.Tr.WithChildren(Tag.Th.WithInnerText("Author"), Tag.Th.WithInnerText("Commits"), Tag.Th.WithInnerText("Added"), Tag.Th.WithInnerText("Deleted"));
         }
 
         private HtmlElement AuthorRow(string author, AuthorStats stats)
         {
-            return Tag.Tr.WithChildren(Tag.Td.WithInnerText(WebUtility.HtmlEncode(author)), Tag.Td.WithInnerText(stats.LinesAdded.ToString("N0")),
-                Tag.Td.WithInnerText(stats.LinesDeleted.ToString("N0")));
+            return Tag.Tr.WithChildren(Tag.Td.WithInnerText(WebUtility.HtmlEncode(author)), Tag.Td.WithInnerText(stats.NumberOfCommits.ToString("N0")),
+                Tag.Td.WithInnerText(stats.LinesAdded.ToString("N0")), Tag.Td.WithInnerText(stats.LinesDeleted.ToString("N0")));
         }
     }
 }

@@ -64,6 +64,7 @@ namespace GitRepoStats.CommandLine
             HtmlDocument document = new HtmlDocument();
             document.Body.Children.Add(Tag.Style.WithInnerText(LoadCssString()).WithAttribute(Attribute.Type("text/css")));
             Collection<HtmlElement> elements = new Collection<HtmlElement>(allStats.Select(x => x.ToHtml()).ToList());
+            document.Body.AddChild(Tag.H1.WithClass("pageHeader").WithInnerText("Git Repo Stats"));
             document.Body.AddChild(Tag.Div.WithChildren(elements).WithClass("parent"));
             return document.Serialize().Replace("\r", Environment.NewLine);
         }

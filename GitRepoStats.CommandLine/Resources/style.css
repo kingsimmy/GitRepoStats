@@ -14,13 +14,17 @@
 	}
 	.parent{
 		display: flex;
-		justify-content: center;
-		flex-flow: row wrap;
+		flex-wrap: wrap;
+		flex-direction: column;
+		height:1200px;
 	}
 	.child{
 		margin: 50px;
-		width: 800px;
+		width: 600px;
 	}
 	.repoHeader{		
 		margin: 0;
+	}
+	.pageHeader{		
+		text-align: center;
 	}
