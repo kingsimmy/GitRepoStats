@@ -8,7 +8,7 @@ The default output mode is text.
 To have the output as an html page pass option -html
 
 By default output appears on std out.
-To have output written to a file pass option -outFile <filename>
+To have output written to a file pass option -outFile \<filename>
 
 Example command line for a single repository generating text output:
 ```
@@ -16,8 +16,8 @@ Example command line for a single repository generating text output:
 ```
 ```
 C:\src\html-generator\.git\
-Hugh Bellamy <hughbellars@gmail.com> 3 commits. 8350 added. 25 deleted.
-Peter Jas <necmon@yahoo.com> 1 commits. 1226 added. 1368 deleted.
+Hugh Bellamy <anonymized@gmail.com> 3 commits. 8350 added. 25 deleted.
+Peter Jas <anonymized@yahoo.com> 1 commits. 1226 added. 1368 deleted.
 kingsimmy <kingsimmy@users.noreply.github.com> 1 commits. 43 added. 1 deleted.
 .gitignore 1 files totalling 252 lines.
 .yml 2 files totalling 147 lines.
