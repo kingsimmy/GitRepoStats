@@ -33,8 +33,7 @@ namespace GitRepoStats.CommandLine
             foreach (Commit commit in repo.Commits)
             {
                 if (commit.Parents.Count() != 1)
-                {
-                    IncrementAuthor(commit.Author, 0, 0);
+                {                    
                     continue;
                 }
                 PatchStats stats = repo.Diff.Compare<PatchStats>(commit.Parents.First().Tree, commit.Tree);
