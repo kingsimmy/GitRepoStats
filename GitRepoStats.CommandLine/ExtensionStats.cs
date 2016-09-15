@@ -13,7 +13,7 @@ namespace GitRepoStats.CommandLine
 
         public override string ToString()
         {
-            return $"{NumberOfFiles} files totalling {NumberOfLines} lines.";
+            return $"{NumberOfFiles.ToString("N0")} files totalling {NumberOfLines.ToString("N0")} lines.";
         }
     }
 }

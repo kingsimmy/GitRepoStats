@@ -21,7 +21,7 @@ namespace GitRepoStats.CommandLine
             IEnumerable<RepoStats> repoStats = GetRepoStats(argList);
             string output = htmlOutput ? GenerateHtml(repoStats) : GenerateString(repoStats);
                         
-            if (String.IsNullOrEmpty(outFilePath))
+            if (string.IsNullOrEmpty(outFilePath))
             {
                 Console.WriteLine(output);
             }
@@ -80,14 +80,14 @@ namespace GitRepoStats.CommandLine
 
         private static string GenerateString(params RepoStats[] allStats)
         {
-            return GenerateHtml(allStats);
+            return GenerateString(allStats);
         }
 
         private static string GenerateString(IEnumerable<RepoStats> allStats)
         {
             Func<RepoStats, string> repoStatsToString = 
                 repoStats => repoStats.ToString() + Environment.NewLine + Environment.NewLine;
-            return new String(allStats.SelectMany(repoStatsToString).ToArray());
+            return new string(allStats.SelectMany(repoStatsToString).ToArray());
         }
 
         private static IEnumerable<RepoStats> GetRepoStats(params string[] repoPaths)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -64,9 +63,9 @@ namespace GitRepoStats.CommandLine
 
         public override string ToString()
         {            
-            string authorsString = string.Concat(AuthorStatistics.SelectMany(x => x.Value.NameEmail + " " + x.Value + Environment.NewLine));
-            string extensionsString = string.Concat(ExtensionStatistics.SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
-            return RepoPath + Environment.NewLine + authorsString + extensionsString;
+            string authorsString = string.Concat(AuthorStatistics.Values.OrderByDescending(x => x.NumberOfCommits).SelectMany(x => x + Environment.NewLine));
+            string extensionsString = string.Concat(ExtensionStatistics.OrderByDescending(x => x.Value.NumberOfFiles).SelectMany(x => x.Key + " " + x.Value + Environment.NewLine));
+            return RepoName + Environment.NewLine + authorsString + extensionsString;
         }
 
         public HtmlElement ToHtml()

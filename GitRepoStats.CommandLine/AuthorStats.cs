@@ -17,7 +17,7 @@ namespace GitRepoStats.CommandLine
         
         public override string ToString()
         {
-            return $"{NumberOfCommits} commits. {LinesAdded} added. {LinesDeleted} deleted.";
+            return $"{NameEmail} {NumberOfCommits.ToString("N0")} commits. {LinesAdded.ToString("N0")} added. {LinesDeleted.ToString("N0")} deleted.";
         }
     }
 }
