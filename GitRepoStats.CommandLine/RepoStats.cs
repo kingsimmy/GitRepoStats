@@ -45,7 +45,8 @@ namespace GitRepoStats.CommandLine
             List<string> paths = repo.Index.Select(indexEntry => indexEntry.Path).ToList();
             PatchStats patches = repo.Diff.Compare<PatchStats>(null, repo.Head.Tip.Tree);            
             extensionStatistics = paths.GroupBy(p => Path.GetExtension(p), p => patches[p].LinesAdded)
-                .ToDictionary(x => x.Key, x => new ExtensionStats(x.Count(), x.Sum()));
+                .Where(x => !string.IsNullOrEmpty(x.Key))
+                .ToDictionary(x => x.Key, x => new ExtensionStats(x.Key, x.Count(), x.Sum()));
         }
 
         private void IncrementAuthor(Signature author, int numLinesAdded, int numLinesDeleted)
@@ -70,17 +71,36 @@ namespace GitRepoStats.CommandLine
 
         public HtmlElement ToHtml()
         {
-            return AuthorsTable();
+            return Tag.Div.WithClass("child").WithChildren(Tag.H3.WithInnerText(RepoName).WithClass("repoHeader"),
+                AuthorsTable(), ExtensionsTable());
+        }
+
+        private HtmlElement ExtensionsTable()
+        {
+            List<HtmlElement> rows = new List<HtmlElement> { ExtensionsHeader() };
+            rows.AddRange(ExtensionStatistics.Values.OrderByDescending(x => x.NumberOfFiles).Select(x => ExtensionsRow(x)));
+            return Tag.Table.WithChildren(rows);
+        }
+
+        private HtmlElement ExtensionsHeader()
+        {
+            return Tag.Tr.WithChildren(Tag.Th.WithInnerText("Extension"), Tag.Th.WithInnerText("Files"), Tag.Th.WithInnerText("Lines"));
+        }
+
+        private HtmlElement ExtensionsRow(ExtensionStats stats)
+        {
+            return Tag.Tr.WithChildren(Tag.Td.WithInnerText(WebUtility.HtmlEncode(stats.Extension)), Tag.Td.WithInnerText(stats.NumberOfFiles.ToString("N0")),
+                Tag.Td.WithInnerText(stats.NumberOfLines.ToString("N0")));
         }
 
         private HtmlElement AuthorsTable()
         {
-            List<HtmlElement> rows = new List<HtmlElement> { HeaderRow() };
+            List<HtmlElement> rows = new List<HtmlElement> { AuthorHeader() };
             rows.AddRange(AuthorStatistics.Values.OrderByDescending(x => x.NumberOfCommits).Select(x => AuthorRow(x.NameEmail, x)));
-            return Tag.Div.WithClass("child").WithChildren(Tag.H3.WithInnerText(RepoName).WithClass("repoHeader"), Tag.Table.WithChildren(rows));
+            return Tag.Table.WithChildren(rows);
         }
 
-        private HtmlElement HeaderRow()
+        private HtmlElement AuthorHeader()
         {
             return Tag.Tr.WithChildren(Tag.Th.WithInnerText("Author"), Tag.Th.WithInnerText("Commits"), Tag.Th.WithInnerText("Added"), Tag.Th.WithInnerText("Deleted"));
         }
