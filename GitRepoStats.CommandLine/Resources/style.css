@@ -1,5 +1,5 @@
 ﻿	body{
-		font-family: Arial,Verdana,sans-serif;
+		font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	}
 	table,th,td {
 		padding: 2px;
@@ -16,10 +16,9 @@
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: column;
-		height:1200px;
 	}
 	.child{
-		margin: 50px;
+		margin: 15px auto;
 		width: 600px;
 	}
 	.repoHeader{		
