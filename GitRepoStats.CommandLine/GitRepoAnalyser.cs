@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Attribute = HtmlGenerator.Attribute;
 using Tag = HtmlGenerator.Tag;
+using GitRepoStats.CommandLine.Extensions;
 
 namespace GitRepoStats.CommandLine
 {
@@ -62,16 +63,23 @@ namespace GitRepoStats.CommandLine
         private static string GenerateHtml(IEnumerable<RepoStats> allStats)
         {
             HtmlDocument document = new HtmlDocument();
-            document.Body.Children.Add(Tag.Style.WithInnerText(LoadCssString()).WithAttribute(Attribute.Type("text/css")));
-            Collection<HtmlElement> elements = new Collection<HtmlElement>(allStats.Select(x => x.ToHtml()).ToList());
+            document.Head.AddChild(Tag.Script.WithAttribute(Attribute.Src("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")));
+            document.Head.AddChild(Tag.Script.WithAttribute(Attribute.Src("https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js")));
+            document.Head.AddChild(Tag.Link.WithAttributes(Attribute.Href("https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/css/jquery.dataTables.css"), Attribute.Rel("stylesheet")));
+            document.Head.AddChild(Tag.Style.WithInnerText(LoadString("GitRepoStats.CommandLine.Resources.style.css")).WithAttribute(Attribute.Type("text/css")));            
+            Collection <HtmlElement> elements = new Collection<HtmlElement>(allStats.Select(x => x.ToHtml()).ToList());
             document.Body.AddChild(Tag.H1.WithClass("pageHeader").WithInnerText("Git Repo Stats"));
-            document.Body.AddChild(Tag.Div.WithChildren(elements).WithClass("parent"));
+            document.Body.AddChild(Tag.Div.WithChildren(elements).WithClass("parent"));            
+            document.Body.AddChild(Tag.Script.WithInnerText(LoadString("GitRepoStats.CommandLine.Resources.script.js")));
+            string tableIds = string.Join(", ", allStats.Select(x => $"'#{x.RepoName}_e', '#{x.RepoName}_a'").ToArray());
+            string tableIdsArray = $"[{tableIds}]";
+            document.Body.AddChild(Tag.Script.WithInnerText($"initialiseTables({tableIdsArray});"));
             return document.Serialize().Replace("\r", Environment.NewLine);
         }
 
-        private static string LoadCssString()
+        private static string LoadString(string path)
         {
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GitRepoStats.CommandLine.Resources.style.css"))
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path))
             using (StreamReader reader = new StreamReader(stream))
             {
                 return "\r" + reader.ReadToEnd().Replace(Environment.NewLine, "\r") + "\r\t";

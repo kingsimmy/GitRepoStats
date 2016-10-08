@@ -17,5 +17,11 @@ namespace GitRepoStats.CommandLine.Extensions
             element.WithChildren(new Collection<HtmlElement>(children));
             return element;
         }
+
+        public static HtmlElement WithAttributes(this HtmlElement element, params HtmlAttribute[] attributes)
+        {
+            element.WithAttributes(new Collection<HtmlAttribute>(attributes));
+            return element;
+        }
     }
 }
