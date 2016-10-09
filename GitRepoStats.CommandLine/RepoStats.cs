@@ -79,7 +79,7 @@ namespace GitRepoStats.CommandLine
         private HtmlElement ExtensionsTable()
         {
             List<HtmlElement> rows = ExtensionStatistics.Values.OrderByDescending(x => x.NumberOfFiles).Select(x => ExtensionsRow(x)).ToList();
-            return Tag.Table.WithChildren(Tag.Thead.WithChild(ExtensionsHeader()), Tag.Tbody.WithChildren(rows)).WithAttribute(Attribute.Id($"{RepoName}_e"));
+            return Tag.Table.WithChildren(Tag.Thead.WithChild(ExtensionsHeader()), Tag.Tbody.WithChildren(rows)).WithAttribute(Attribute.Id($"{RepoName}_e")).WithAttribute(Attribute.Class("eTable"));
         }
 
         private HtmlElement ExtensionsHeader()
@@ -95,8 +95,8 @@ namespace GitRepoStats.CommandLine
 
         private HtmlElement AuthorsTable()
         {
-            List<HtmlElement> rows = AuthorStatistics.Values.OrderByDescending(x => x.NumberOfCommits).Select(x => AuthorRow(x.NameEmail, x)).ToList();
-            return Tag.Table.WithChildren(Tag.Thead.WithChild(AuthorHeader()), Tag.Tbody.WithChildren(rows)).WithAttribute(Attribute.Id($"{RepoName}_a"));
+            List<HtmlElement> rows = AuthorStatistics.Values.OrderByDescending(x => x.NumberOfCommits).Select(x => AuthorRow(string.Concat(x.NameEmail.Take(50)), x)).ToList();
+            return Tag.Table.WithChildren(Tag.Thead.WithChild(AuthorHeader()), Tag.Tbody.WithChildren(rows)).WithAttribute(Attribute.Id($"{RepoName}_a")).WithAttribute(Attribute.Class("aTable"));
         }
 
         private HtmlElement AuthorHeader()

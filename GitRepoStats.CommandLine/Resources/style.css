@@ -8,9 +8,19 @@
 		border-color: #BDBDBD;
 		border-collapse: collapse;
 	}
+	table.aTable{
+		width: 750px;
+	}
+	table.eTable{
+		width: 400px;
+	}
 	th{
 		background-color: #DCFFDC;
 		font-weight: bold;
+	}
+	.dataTables_wrapper{
+	    display: inline-block;
+		vertical-align: top;
 	}
 	.parent{
 		display: flex;
@@ -19,11 +29,13 @@
 	}
 	.child{
 		margin: 15px auto;
-		width: 600px;
 	}
 	.repoHeader{		
 		margin: 0;
 	}
 	.pageHeader{		
 		text-align: center;
+	}
+	table.dataTable tbody td {
+		padding: 2px 4px;
 	}
