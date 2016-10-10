@@ -19,6 +19,10 @@ namespace GitRepoStats.CommandLine
             List<string> argList = args.ToList();
             bool htmlOutput = argList.Remove("-html");
             string outFilePath = GetOutFilePath(argList);
+            if(argList.Count == 0 || argList.Contains("-h") || argList.Contains("--help"))
+            {
+                PrintUsageAndExit();
+            }
             IEnumerable<RepoStats> repoStats = GetRepoStats(argList);
             string output = htmlOutput ? GenerateHtml(repoStats) : GenerateString(repoStats);
                         
@@ -31,6 +35,18 @@ namespace GitRepoStats.CommandLine
                 File.WriteAllText(outFilePath, output);
                 Console.WriteLine("Output has been written to " + outFilePath);
             }
+        }
+
+        private static void PrintUsageAndExit()
+        {
+            Console.WriteLine("Usage:");
+            Console.WriteLine("\tGitRepoStats.CommandLine.exe <RepositoryPath> ...");
+            Console.WriteLine("Options:");
+            Console.WriteLine("\t-h\t\t\tShow this screen.");
+            Console.WriteLine("\t--help\t\t\tShow this screen.");
+            Console.WriteLine("\t-html\t\t\tWrite output as html.");
+            Console.WriteLine("\t-outFile [FilePath]\tWrite output to a file.");            
+            Environment.Exit(1);
         }
 
         private static string GetOutFilePath(List<string> args)
