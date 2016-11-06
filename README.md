@@ -31,6 +31,6 @@ kingsimmy <kingsimmy@users.noreply.github.com> 1 commits. 43 added. 1 deleted.
 ```
 Example command line for multiple repositores generating html output to a file:
 ```
->GitRepoStats.CommandLine.exe C:\src\ChakraCore C:\src\html-generator C:\src\monaco-editor -outFile "C:\src\report.html" -html
+>GitRepoStats.CommandLine.exe C:\src\ChakraCore C:\src\NLog -outFile "C:\src\report.html" -html
 ```
-![alt tag](https://i.imgur.com/gXMRabQ.png)
+![alt tag](https://i.imgur.com/0esQFfo.png)
