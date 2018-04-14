@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-	<TargetFramework>net46</TargetFramework>
+	<TargetFramework>net47</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Resources\script.js" />
 	  <EmbeddedResource Include="Resources\style.css" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="GitRead.Net" Version="1.4.0" />
 		<PackageReference Include="HtmlGenerator" Version="1.0.13" />
-		<PackageReference Include="LibGit2Sharp" Version="0.23.0-pre20160922233542" />
-		<PackageReference Include="LibGit2Sharp.NativeBinaries" Version="1.0.160" />
 	</ItemGroup>
 </Project>

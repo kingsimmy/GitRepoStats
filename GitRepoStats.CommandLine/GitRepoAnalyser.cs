@@ -1,14 +1,14 @@
-﻿using HtmlGenerator;
-using LibGit2Sharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GitRead.Net;
+using GitRepoStats.CommandLine.Extensions;
+using HtmlGenerator;
 using Attribute = HtmlGenerator.Attribute;
 using Tag = HtmlGenerator.Tag;
-using GitRepoStats.CommandLine.Extensions;
 
 namespace GitRepoStats.CommandLine
 {
@@ -123,8 +123,8 @@ namespace GitRepoStats.CommandLine
         {
             foreach (string repoPath in repoPaths)
             {
-                Repository repo = new Repository(repoPath);
-                yield return new RepoStats(repo);
+                RepositoryAnalyzer repo = new RepositoryAnalyzer(repoPath);
+                yield return new RepoStats(repo, repoPath);
             }
         }
     }

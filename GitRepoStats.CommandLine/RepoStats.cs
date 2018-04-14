@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using GitRead.Net;
+using GitRead.Net.Data;
 using GitRepoStats.CommandLine.Extensions;
 using HtmlGenerator;
-using LibGit2Sharp;
-using Tag = HtmlGenerator.Tag;
 using Attribute = HtmlGenerator.Attribute;
+using Tag = HtmlGenerator.Tag;
 
 namespace GitRepoStats.CommandLine
 {
@@ -16,9 +17,9 @@ namespace GitRepoStats.CommandLine
         private Dictionary<string, AuthorStats> authorStatistics = new Dictionary<string, AuthorStats>();
         private Dictionary<string, ExtensionStats> extensionStatistics;
 
-        public RepoStats(Repository repo)
+        public RepoStats(RepositoryAnalyzer repo, string path)
         {
-            RepoPath = repo.Info.Path;
+            RepoPath = path;
             CountPerAuthor(repo);
             CountPerExtension(repo);
         }
@@ -28,35 +29,35 @@ namespace GitRepoStats.CommandLine
         public IReadOnlyDictionary<string, AuthorStats> AuthorStatistics { get { return authorStatistics; } }
         public IReadOnlyDictionary<string, ExtensionStats> ExtensionStatistics { get { return extensionStatistics; } }
 
-        private void CountPerAuthor(Repository repo)
+        private void CountPerAuthor(RepositoryAnalyzer repo)
         {
-            foreach (Commit commit in repo.Commits)
+            foreach (Commit commit in repo.GetCommits())
             {
                 if (commit.Parents.Count() != 1)
                 {                    
                     continue;
                 }
-                PatchStats stats = repo.Diff.Compare<PatchStats>(commit.Parents.First().Tree, commit.Tree);
-                IncrementAuthor(commit.Author, stats.TotalLinesAdded, stats.TotalLinesDeleted);
+                CommitDelta stats = repo.GetChanges(commit.Hash);
+                int added = stats.Added.Sum(x => x.NumberOfLinesAdded) + stats.Modified.Sum(x => x.NumberOfLinesAdded);
+                int deleted = stats.Deleted.Sum(x => x.NumberOfLinesDeleted) + stats.Modified.Sum(x => x.NumberOfLinesDeleted);
+                IncrementAuthor(commit.Author, commit.EmailAddress, added, deleted);
             }
         }
 
-        private void CountPerExtension(Repository repo)
+        private void CountPerExtension(RepositoryAnalyzer repo)
         {
-            List<string> paths = repo.Index.Select(indexEntry => indexEntry.Path).ToList();
-            PatchStats patches = repo.Diff.Compare<PatchStats>(null, repo.Head.Tip.Tree);            
-            extensionStatistics = paths.GroupBy(p => Path.GetExtension(p), p => patches[p].LinesAdded)
+            extensionStatistics = repo.GetFileLineCounts().GroupBy(p => Path.GetExtension(p.FilePath))
                 .Where(x => !string.IsNullOrEmpty(x.Key))
-                .ToDictionary(x => x.Key, x => new ExtensionStats(x.Key, x.Count(), x.Sum()));
+                .ToDictionary(x => x.Key, x => new ExtensionStats(x.Key, x.Count(), x.Sum(y => y.LineCount)));
         }
 
-        private void IncrementAuthor(Signature author, int numLinesAdded, int numLinesDeleted)
+        private void IncrementAuthor(string name, string email, int numLinesAdded, int numLinesDeleted)
         {
             AuthorStats authorStats;
-            if(!authorStatistics.TryGetValue(author.Email, out authorStats))
+            if(!authorStatistics.TryGetValue(email, out authorStats))
             {
-                authorStatistics[author.Email] = new AuthorStats(author.Name, author.Email);
-                authorStats = authorStatistics[author.Email];
+                authorStatistics[email] = new AuthorStats(name, email);
+                authorStats = authorStatistics[email];
             }
             authorStats.NumberOfCommits += 1;
             authorStats.LinesAdded += numLinesAdded;
